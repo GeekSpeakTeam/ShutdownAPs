@@ -1,0 +1,36 @@
+# Very Basic example for how you can SSH onto a switch and list the status of an interface before shutting it down and then reporting on the status change afterwards
+# These are designed to just give you a taste on your automation journey as a beginner (like me)
+# SSH to Multiple Devices from devices file
+from netmiko import ConnectHandler
+
+sshCli = ConnectHandler(
+    device_type = 'cisco_ios',
+    host = '10.10.10.5',
+    port = 22,
+    username = 'xxx',
+    password = 'xxx'
+    )
+
+print ("***************Current Status of Port*****************")
+output = sshCli.send_command("show ip int brief | in GigabitEthernet0/5")
+print("{}\n".format(output))
+
+config_commands = [
+    'int g0/5',
+    'shut',
+    'do wri'
+    ]
+
+sentConfig = sshCli.send_config_set(config_commands)
+#print("{}\n".format(sentConfig))
+print ("******************End Status of Port******************")
+output = sshCli.send_command("show ip int brief | in GigabitEthernet0/5")
+print("{}\n".format(output))
+
+#sentConfig = sshCli.send_config_set(config_commands)
+#print("{}\n".format(sentConfig))
+
+print ("**********************DISCONNECT**********************")
+sshCli.disconnect()
+
+
